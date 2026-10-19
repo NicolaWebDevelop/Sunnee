@@ -4,6 +4,10 @@ Progetto didattico in **TypeScript** che modella le interazioni tra clienti, pro
 
 Sunnee è un brand ipotetico ma realistico, nato dall'idea di una surfista e amante del mare: trasformare rifiuti plastici, come le reti da pesca dismesse, in una risorsa per realizzare articoli beachwear.
 
+
+🌐 **Live Demo:** [https://codepen.io/NicolaWebDevelop/pen/XJMqMVK](https://codepen.io/NicolaWebDevelop/pen/XJMqMVK)  
+💻 **Repository GitHub:** [https://github.com/NicolaWebDevelop/Sunnee](https://github.com/NicolaWebDevelop/Sunnee)
+
 ## Obiettivo
 
 Rappresentare la struttura operativa del brand applicando i principi della programmazione orientata agli oggetti: tipizzazione, interfacce, classi e incapsulamento.
@@ -129,6 +133,9 @@ Il sistema opera in memoria: i dati e il contatore degli ID vengono ricreati a o
 
 Il contesto di sostenibilità è parte della simulazione didattica; il codice non misura l'impatto ambientale dei prodotti.
 
-## Autore
+## 👨‍💻 Autore
 
-**Nicola Berardi** — [NicolaWebDevelop](https://github.com/NicolaWebDevelop)
+**Nicola Berardi** – Frontend Developer  
+🌐 [Portfolio](https://nicolawebdevelop.github.io/WebNicolaDesign/)  
+💻 [GitHub](https://github.com/NicolaWebDevelop)  
+📧 [Email](mailto:nicolag704@gmail.com)

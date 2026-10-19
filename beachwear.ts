@@ -1,184 +1,352 @@
-// Sistema dimostrativo: ogni prodotto rappresenta un singolo capo.
+// SUNNEE - BEACHWEAR SOSTENIBILE
 
-export type TipoProdotto = "bikini" | "costume intero" | "shorts";
-export type Taglia = "XS" | "S" | "M" | "L" | "XL";
-export type MetodoPagamento = "carta" | "paypal" | "bonifico";
+// Ogni prodotto rappresenta un singolo articolo.
+// I materiali e i processi descritti sono dimostrativi.
 
-export interface IProdotto {
+type TipoProdotto = "costume da bagno" | "pareo" | "cappello";
+
+type StatoProdotto = "disponibile" | "esaurito";
+
+type MetodoPagamento = "carta" | "PayPal" | "bonifico";
+
+
+// INTERFACCE
+
+interface IProdotto {
   readonly id: string;
   readonly tipo: TipoProdotto;
-  readonly taglia: Taglia;
+  readonly taglia: string;
   readonly colore: string;
-  readonly prezzo: number;
-  readonly percentualePlasticaRiciclata: number;
-  readonly cliente: ICliente | null;
-  readonly processoProduzione: IProcessoProduzione | null;
+
+  stato: StatoProdotto;
+
   assegnaCliente(cliente: ICliente): void;
-  assegnaProcesso(processo: IProcessoProduzione): void;
 }
 
-export interface ICliente {
+interface ICliente {
   readonly nome: string;
   readonly cognome: string;
   readonly email: string;
-  readonly metodoPagamento: MetodoPagamento;
+
+  metodoPagamentoPreferito: MetodoPagamento;
+
   ordinaProdotto(prodotto: IProdotto): void;
 }
 
-export interface IProcessoProduzione {
+interface IProcessoProduzione {
   readonly nome: string;
   readonly descrizione: string;
-  readonly origineMateriale: string;
-  readonly prodotti: readonly IProdotto[];
+
+  prodottiInProduzione: IProdotto[];
+
   aggiungiProdotto(prodotto: IProdotto): void;
 }
 
-function verificaTesto(valore: string, campo: string): string {
-  const testo = valore.trim();
-  if (!testo) throw new Error(`${campo} non può essere vuoto.`);
-  return testo;
-}
+// CLASSE PRODOTTO
 
-export class Prodotto implements IProdotto {
+class Prodotto implements IProdotto {
+  // Il contatore genera ID diversi per le istanze
+  // create durante l'esecuzione del programma.
+  private static prossimoId = 1;
+
   readonly id: string;
-  readonly colore: string;
+
   private clienteAssegnato: ICliente | null = null;
-  private processoAssegnato: IProcessoProduzione | null = null;
 
   constructor(
-    id: string,
-    readonly tipo: TipoProdotto,
-    readonly taglia: Taglia,
-    colore: string,
-    readonly prezzo: number,
-    readonly percentualePlasticaRiciclata: number,
+    public readonly tipo: TipoProdotto,
+    public readonly taglia: string,
+    public readonly colore: string,
+    public stato: StatoProdotto = "disponibile"
   ) {
-    this.id = verificaTesto(id, "ID prodotto");
-    this.colore = verificaTesto(colore, "Colore");
-    if (!Number.isFinite(prezzo) || prezzo <= 0) {
-      throw new Error("Il prezzo deve essere un numero positivo.");
+    if (!taglia.trim() || !colore.trim()) {
+      throw new Error("Taglia e colore sono obbligatori.");
     }
-    if (!Number.isFinite(percentualePlasticaRiciclata)
-      || percentualePlasticaRiciclata <= 0
-      || percentualePlasticaRiciclata > 100) {
-      throw new Error("La percentuale riciclata deve essere maggiore di 0 e fino a 100.");
-    }
+
+    this.id = `SUN-${Prodotto.prossimoId++}`;
   }
 
   get cliente(): ICliente | null {
     return this.clienteAssegnato;
   }
 
-  get processoProduzione(): IProcessoProduzione | null {
-    return this.processoAssegnato;
+  get ordinato(): boolean {
+    return this.clienteAssegnato !== null;
   }
 
   assegnaCliente(cliente: ICliente): void {
-    if (this.clienteAssegnato !== null) {
-      throw new Error(`Il prodotto ${this.id} è già stato ordinato.`);
+    if (this.stato !== "disponibile" || this.ordinato) {
+      throw new Error(
+        `Il prodotto ${this.id} non è disponibile.`
+      );
     }
-    if (this.processoAssegnato === null) {
-      throw new Error(`Il prodotto ${this.id} non ha un processo di produzione associato.`);
-    }
-    this.clienteAssegnato = cliente;
-  }
 
-  assegnaProcesso(processo: IProcessoProduzione): void {
-    if (this.processoAssegnato === processo) return;
-    if (this.processoAssegnato !== null) {
-      throw new Error(`Il prodotto ${this.id} appartiene già a un altro processo.`);
-    }
-    // Il processo aggiorna entrambi i lati della relazione.
-    processo.aggiungiProdotto(this);
-    this.processoAssegnato = processo;
+    this.clienteAssegnato = cliente;
+    this.stato = "esaurito";
   }
 }
 
-export class Cliente implements ICliente {
-  readonly nome: string;
-  readonly cognome: string;
-  readonly email: string;
 
+// CLASSE CLIENTE
+
+class Cliente implements ICliente {
   constructor(
-    nome: string,
-    cognome: string,
-    email: string,
-    readonly metodoPagamento: MetodoPagamento,
+    public readonly nome: string,
+    public readonly cognome: string,
+    public readonly email: string,
+    public metodoPagamentoPreferito: MetodoPagamento
   ) {
-    this.nome = verificaTesto(nome, "Nome");
-    this.cognome = verificaTesto(cognome, "Cognome");
-    this.email = verificaTesto(email, "Email").toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email)) {
+    if (!nome.trim() || !cognome.trim()) {
+      throw new Error("Nome e cognome sono obbligatori.");
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       throw new Error("Indirizzo email non valido.");
     }
   }
 
   ordinaProdotto(prodotto: IProdotto): void {
-    // Registrazione dell'ordine: nessun pagamento reale viene eseguito.
+    if (prodotto.stato !== "disponibile") {
+      throw new Error(
+        `Ordine non riuscito: ${prodotto.id} è esaurito.`
+      );
+    }
+
     prodotto.assegnaCliente(this);
-    console.log(`${this.nome} ${this.cognome} ha ordinato ${prodotto.tipo} (${prodotto.id}).`);
+
+    console.log(
+      `Ordine confermato: ${this.nome} ${this.cognome} ` +
+      `ha ordinato ${prodotto.tipo} (${prodotto.id}).`
+    );
   }
 }
 
-export class ProcessoProduzione implements IProcessoProduzione {
-  readonly nome: string;
-  readonly descrizione: string;
-  readonly origineMateriale: string;
-  private readonly elencoProdotti: IProdotto[] = [];
 
-  constructor(nome: string, descrizione: string, origineMateriale: string) {
-    this.nome = verificaTesto(nome, "Nome processo");
-    this.descrizione = verificaTesto(descrizione, "Descrizione processo");
-    this.origineMateriale = verificaTesto(origineMateriale, "Origine materiale");
-  }
+// CLASSE PROCESSO DI PRODUZIONE
 
-  get prodotti(): readonly IProdotto[] {
-    return [...this.elencoProdotti];
+
+class ProcessoProduzione implements IProcessoProduzione {
+  prodottiInProduzione: IProdotto[] = [];
+
+  constructor(
+    public readonly nome: string,
+    public readonly descrizione: string
+  ) {
+    if (!nome.trim() || !descrizione.trim()) {
+      throw new Error(
+        "Nome e descrizione del processo sono obbligatori."
+      );
+    }
   }
 
   aggiungiProdotto(prodotto: IProdotto): void {
-    if (this.elencoProdotti.includes(prodotto)) return;
-    if (this.elencoProdotti.some(elemento => elemento.id === prodotto.id)) {
-      throw new Error(`ID prodotto duplicato: ${prodotto.id}.`);
+    const giaPresente = this.prodottiInProduzione.some(
+      articolo => articolo.id === prodotto.id
+    );
+
+    if (giaPresente) {
+      throw new Error(
+        `Il prodotto ${prodotto.id} è già presente nel processo.`
+      );
     }
-    if (prodotto.processoProduzione !== null && prodotto.processoProduzione !== this) {
-      throw new Error(`Il prodotto ${prodotto.id} appartiene a un altro processo.`);
-    }
-    // Inserimento prima del collegamento per interrompere la chiamata reciproca.
-    this.elencoProdotti.push(prodotto);
-    try {
-      prodotto.assegnaProcesso(this);
-    } catch (errore) {
-      this.elencoProdotti.pop();
-      throw errore;
-    }
+
+    this.prodottiInProduzione.push(prodotto);
+
+    console.log(
+      `${prodotto.tipo} (${prodotto.id}) aggiunto ` +
+      `al processo "${this.nome}".`
+    );
   }
 }
 
-// Esempio di utilizzo con dati fittizi.
-const processo = new ProcessoProduzione(
-  "Riciclo PET e confezionamento",
-  "Selezione del PET, riciclo, filatura, tessitura e confezionamento dei capi.",
-  "PET proveniente da raccolta differenziata",
+
+// CREAZIONE DEI PRODOTTI
+
+
+const costume = new Prodotto(
+  "costume da bagno",
+  "M",
+  "blu"
 );
 
-const bikini = new Prodotto("BW-001", "bikini", "S", "blu", 59.90, 80);
-const shorts = new Prodotto("BW-002", "shorts", "M", "verde", 49.90, 90);
-const costume = new Prodotto("BW-003", "costume intero", "L", "nero", 69.90, 85);
+const pareo = new Prodotto(
+  "pareo",
+  "unica",
+  "verde"
+);
 
-processo.aggiungiProdotto(bikini);
-processo.aggiungiProdotto(shorts);
+const cappello = new Prodotto(
+  "cappello",
+  "L",
+  "sabbia"
+);
+
+const prodottoEsaurito = new Prodotto(
+  "costume da bagno",
+  "S",
+  "nero",
+  "esaurito"
+);
+
+
+// CREAZIONE DEI CLIENTI
+
+
+const nicola = new Cliente(
+  "Nicola",
+  "Berardi",
+  "nicola@example.com",
+  "carta"
+);
+
+const giulia = new Cliente(
+  "Giulia",
+  "Rossi",
+  "giulia@example.com",
+  "PayPal"
+);
+
+
+// CREAZIONE DEL PROCESSO DI PRODUZIONE
+
+
+const processo = new ProcessoProduzione(
+  "Rigenerazione delle reti da pesca",
+  "Recupero delle reti dismesse, rigenerazione del " +
+  "materiale e realizzazione di articoli beachwear."
+);
+
+// Aggiunta degli articoli al processo.
 processo.aggiungiProdotto(costume);
+processo.aggiungiProdotto(pareo);
+processo.aggiungiProdotto(cappello);
 
-const cliente = new Cliente("Nicola", "Berardi", "nicola@example.com", "carta");
-cliente.ordinaProdotto(shorts);
 
-console.table(processo.prodotti.map(prodotto => ({
-  id: prodotto.id,
-  tipo: prodotto.tipo,
-  taglia: prodotto.taglia,
-  prezzo: prodotto.prezzo,
-  percentualeRiciclata: prodotto.percentualePlasticaRiciclata,
-  cliente: prodotto.cliente?.email ?? "Disponibile",
-  processo: prodotto.processoProduzione?.nome,
-})));
+// TEST AUTOMATICI
+
+
+// Un test fallito interrompe l'esecuzione.
+// Gli errori attesi vengono gestiti da verificaErrore.
+
+function verifica(
+  condizione: boolean,
+  descrizione: string
+): void {
+  if (!condizione) {
+    throw new Error(`TEST FALLITO: ${descrizione}`);
+  }
+
+  console.log(`TEST SUPERATO: ${descrizione}`);
+}
+
+function verificaErrore(
+  azione: () => void,
+  descrizione: string
+): void {
+  let erroreRilevato = false;
+
+  try {
+    azione();
+  } catch {
+    erroreRilevato = true;
+  }
+
+  verifica(erroreRilevato, descrizione);
+}
+
+console.log("--- TEST SUNNEE ---");
+
+// Test 1: aggiunta dei prodotti.
+verifica(
+  processo.prodottiInProduzione.length === 3,
+  "Tre prodotti aggiunti al processo"
+);
+
+// Test 2: ordine del primo cliente.
+nicola.ordinaProdotto(costume);
+
+verifica(
+  costume.cliente === nicola &&
+  costume.ordinato &&
+  costume.stato === "esaurito",
+  "Costume assegnato a Nicola e segnato come ordinato"
+);
+
+// Test 3: ordine del secondo cliente.
+giulia.ordinaProdotto(pareo);
+
+verifica(
+  pareo.cliente === giulia &&
+  pareo.stato === "esaurito",
+  "Pareo assegnato a Giulia"
+);
+
+// Test 4: impedire un secondo ordine dello stesso capo.
+verificaErrore(
+  () => giulia.ordinaProdotto(costume),
+  "Secondo ordine dello stesso prodotto bloccato"
+);
+
+verifica(
+  costume.cliente === nicola,
+  "Il costume rimane assegnato al primo cliente"
+);
+
+// Test 5: impedire l'ordine di un articolo esaurito.
+verificaErrore(
+  () => nicola.ordinaProdotto(prodottoEsaurito),
+  "Ordine di un prodotto esaurito bloccato"
+);
+
+// Test 6: impedire duplicati nel processo.
+verificaErrore(
+  () => processo.aggiungiProdotto(cappello),
+  "Aggiunta duplicata bloccata"
+);
+
+verifica(
+  processo.prodottiInProduzione.length === 3,
+  "Il numero di prodotti resta invariato dopo il duplicato"
+);
+
+// Test 7: aggiungere un nuovo articolo.
+const nuovoPareo = new Prodotto(
+  "pareo",
+  "unica",
+  "corallo"
+);
+
+processo.aggiungiProdotto(nuovoPareo);
+
+verifica(
+  processo.prodottiInProduzione.length === 4 &&
+  nuovoPareo.stato === "disponibile",
+  "Nuovo articolo aggiunto e disponibile"
+);
+
+// Test 8: ID univoci.
+const ids = processo.prodottiInProduzione.map(
+  prodotto => prodotto.id
+);
+
+verifica(
+  new Set(ids).size === ids.length,
+  "Tutti i prodotti del processo hanno ID diversi"
+);
+
+
+// RIEPILOGO FINALE
+
+console.log("--- RIEPILOGO PRODOTTI ---");
+
+console.table(
+  processo.prodottiInProduzione.map(prodotto => ({
+    id: prodotto.id,
+    tipo: prodotto.tipo,
+    taglia: prodotto.taglia,
+    colore: prodotto.colore,
+    stato: prodotto.stato
+  }))
+);
+
+console.log("Tutti i test Sunnee sono stati superati.");
