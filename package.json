@@ -1,0 +1,27 @@
+{
+  "name": "sunnee-ts",
+  "version": "1.0.0",
+  "description": "Progetto didattico in **TypeScript** che modella le interazioni tra clienti, prodotti beachwear e processi di produzione sostenibile attraverso interfacce e classi.",
+  "main": "dist/beachwear.js",
+  "scripts": {
+    "tsc": "tsc --noEmit",
+    "verify": "npm run tsc",
+    "build": "tsc",
+    "start": "npm run build && node dist/beachwear.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NicolaWebDevelop/Sunnee.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/NicolaWebDevelop/Sunnee/issues"
+  },
+  "homepage": "https://github.com/NicolaWebDevelop/Sunnee#readme",
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}
