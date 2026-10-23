@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "strict": true,
+    "rootDir": ".",
+    "outDir": "./dist",
+    "noEmitOnError": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["beachwear.ts"],
+  "exclude": ["node_modules", "dist", ".check"]
+}

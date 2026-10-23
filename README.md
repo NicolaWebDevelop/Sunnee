@@ -4,31 +4,33 @@ Progetto didattico in **TypeScript** che modella le interazioni tra clienti, pro
 
 Sunnee è un brand ipotetico ma realistico, nato dall'idea di una surfista e amante del mare: trasformare rifiuti plastici, come le reti da pesca dismesse, in una risorsa per realizzare articoli beachwear.
 
+🌐 [Demo su CodePen](https://codepen.io/NicolaWebDevelop/pen/XJMqMVK)
 
-🌐 **Live Demo:** [https://codepen.io/NicolaWebDevelop/pen/XJMqMVK](https://codepen.io/NicolaWebDevelop/pen/XJMqMVK)  
-💻 **Repository GitHub:** [https://github.com/NicolaWebDevelop/Sunnee](https://github.com/NicolaWebDevelop/Sunnee)
+💻 [Repository GitHub](https://github.com/NicolaWebDevelop/Sunnee)
 
 ## Obiettivo
 
 Rappresentare la struttura operativa del brand applicando i principi della programmazione orientata agli oggetti: tipizzazione, interfacce, classi e incapsulamento.
 
-Il progetto richiede esclusivamente codice TypeScript. I risultati vengono mostrati nella console: non è prevista un'interfaccia grafica.
+Il progetto comprende la logica applicativa in TypeScript. I risultati vengono mostrati nella console: non è prevista un'interfaccia grafica.
 
 ## Tecnologie
 
-- **TypeScript** per la definizione dei tipi e della logica applicativa.
-- **CodePen** come ambiente di esecuzione con preprocessore TypeScript.
-- **Console** per messaggi, verifiche e riepilogo dei prodotti.
+- **TypeScript:** definizione dei tipi e implementazione della logica.
+- **Node.js:** esecuzione locale del programma compilato.
+- **npm:** gestione delle dipendenze e dei comandi del progetto.
+- **CodePen:** esecuzione della demo con preprocessore TypeScript.
+- **Git e GitHub:** versionamento e gestione dei branch.
 
-Non sono utilizzati framework o librerie esterne.
+Non vengono utilizzati framework applicativi. TypeScript è installato come dipendenza di sviluppo.
 
 ## Struttura del sistema
 
 | Interfaccia | Classe | Responsabilità |
 | --- | --- | --- |
 | `IProdotto` | `Prodotto` | Gestire gli articoli e la loro assegnazione ai clienti |
-| `ICliente` | `Cliente` | Gestire i dati dei clienti e l'ordinazione dei prodotti |
-| `IProcessoProduzione` | `ProcessoProduzione` | Rappresentare un processo e i prodotti associati |
+| `ICliente` | `Cliente` | Gestire i dati dei clienti e gli ordini |
+| `IProcessoProduzione` | `ProcessoProduzione` | Gestire un processo e i prodotti associati |
 
 ### Prodotti
 
@@ -42,7 +44,9 @@ La classe `Prodotto` conserva il cliente assegnato e rende consultabile la propr
 
 L'interfaccia `ICliente` definisce nome, cognome, email, metodo di pagamento preferito e il metodo `ordinaProdotto(prodotto: IProdotto): void`.
 
-La classe `Cliente` permette di ordinare un articolo disponibile e delega l'assegnazione al prodotto. I metodi di pagamento previsti sono **carta**, **PayPal** e **bonifico**; non vengono eseguiti pagamenti reali.
+La classe `Cliente` permette di ordinare un articolo disponibile e delega l'assegnazione al prodotto.
+
+I metodi di pagamento previsti sono **carta**, **PayPal** e **bonifico**. Non vengono eseguiti pagamenti reali.
 
 ### Processi di produzione
 
@@ -50,15 +54,83 @@ L'interfaccia `IProcessoProduzione` definisce nome, descrizione, l'array `prodot
 
 La classe `ProcessoProduzione` aggiunge gli articoli all'elenco e impedisce l'inserimento di prodotti con un ID già presente nello stesso processo.
 
+## File principali
+
+| File | Contenuto |
+| --- | --- |
+| `beachwear.ts` | Interfacce, classi, esempi e test |
+| `package.json` | Dipendenze e comandi npm |
+| `package-lock.json` | Versioni delle dipendenze risolte da npm |
+| `tsconfig.json` | Configurazione del compilatore TypeScript |
+| `.gitignore` | Esclusione delle dipendenze e dei file generati |
+| `README.md` | Documentazione del progetto |
+
 ## Funzionamento
 
 1. Si creano gli articoli beachwear e i clienti.
-2. Si crea un processo di produzione sostenibile e vi si aggiungono i prodotti.
+2. Si crea un processo di produzione e vi si aggiungono i prodotti.
 3. Un cliente ordina un prodotto disponibile.
 4. Il prodotto viene associato al cliente e segnato come esaurito.
 5. Un secondo ordine dello stesso articolo viene bloccato.
 
 L'aggiunta a un processo registra un'associazione dimostrativa: non simula tempi di lavorazione o completamento della produzione.
+
+## Esecuzione locale
+
+### Prerequisiti
+
+- Node.js
+- npm
+
+### Installazione
+
+Clonare il repository:
+
+```bash
+git clone https://github.com/NicolaWebDevelop/Sunnee.git
+cd Sunnee
+```
+
+Installare le dipendenze:
+
+```bash
+npm install
+```
+
+### Verifica TypeScript
+
+```bash
+npm run verify
+```
+
+Il comando `verify` esegue `npm run tsc`, che richiama `tsc --noEmit`.
+
+Il compilatore controlla il codice con le impostazioni definite in `tsconfig.json`, inclusa la modalità `strict`, senza generare file JavaScript.
+
+### Compilazione ed esecuzione
+
+```bash
+npm start
+```
+
+Il comando compila il codice nella cartella `dist` ed esegue `dist/beachwear.js`, inclusi gli esempi e i test.
+
+Per eseguire soltanto la compilazione:
+
+```bash
+npm run build
+```
+
+### Comandi disponibili
+
+| Comando | Funzione |
+| --- | --- |
+| `npm run tsc` | Controlla TypeScript senza generare file |
+| `npm run verify` | Esegue `npm run tsc` |
+| `npm run build` | Compila il progetto nella cartella `dist` |
+| `npm start` | Compila ed esegue il programma e i test |
+
+Le cartelle `node_modules`, `dist` e `.check` sono escluse dal versionamento tramite `.gitignore`.
 
 ## Esempio di utilizzo
 
@@ -89,34 +161,42 @@ console.log(articoloDemo.cliente === clienteDemo); // true
 
 ## Esecuzione su CodePen
 
-1. Crea un nuovo Pen.
-2. Nelle impostazioni del pannello JavaScript seleziona **TypeScript** come preprocessore.
-3. Incolla il codice TypeScript completo nel pannello JS, senza tag `<script>`, delimitatori Markdown o dichiarazioni `export`.
-4. Lascia vuoti i pannelli HTML e CSS.
-5. Apri la console ed esegui il codice.
+Aprire la [demo del progetto](https://codepen.io/NicolaWebDevelop/pen/XJMqMVK) e visualizzare la console.
 
-L'anteprima vuota è prevista: l'output viene prodotto nella console. Il riepilogo usa `console.table`, la cui rappresentazione può variare tra la console di CodePen e quella del browser.
+Per ricreare il Pen:
+
+1. Creare un nuovo Pen.
+2. Selezionare **TypeScript** come preprocessore del pannello JavaScript.
+3. Incollare il codice di `beachwear.ts` nel pannello JS, senza tag `<script>`, delimitatori Markdown o dichiarazioni `export`.
+4. Lasciare vuoti i pannelli HTML e CSS.
+5. Aprire la console ed eseguire il codice.
+
+L'anteprima vuota è prevista: l'output viene mostrato nella console. La rappresentazione di `console.table` può variare tra CodePen e la console del browser.
 
 ## Verifiche incluse
 
-Il codice dimostrativo contiene controlli per verificare:
+Il codice contiene controlli per verificare:
 
 - L'aggiunta iniziale di tre prodotti al processo.
 - L'assegnazione del costume al primo cliente e del pareo al secondo.
 - L'aggiornamento dello stato dopo un ordine.
-- Il blocco di un secondo ordine dello stesso articolo, preservando il cliente originale.
+- Il blocco di un secondo ordine dello stesso articolo.
+- Il mantenimento del cliente originariamente assegnato.
 - Il blocco dell'ordine di un articolo già esaurito.
 - Il rifiuto di un'aggiunta duplicata al processo.
+- Il mantenimento del numero di articoli dopo un duplicato rifiutato.
 - L'aggiunta di un nuovo articolo disponibile.
 - L'unicità degli ID dei prodotti presenti nel processo.
 
-Gli errori previsti vengono intercettati dai test. Un controllo fallito interrompe l'esecuzione con il messaggio `TEST FALLITO`; se tutti i controlli passano, viene stampato:
+Gli errori attesi vengono intercettati dai test. Un controllo fallito interrompe l'esecuzione con il messaggio `TEST FALLITO`.
+
+Se tutti i controlli passano, viene stampato:
 
 ```text
 Tutti i test Sunnee sono stati superati.
 ```
 
-Il riepilogo finale dell'esempio contiene quattro prodotti:
+Il riepilogo finale contiene quattro prodotti:
 
 | Articolo | Stato finale |
 | --- | --- |
@@ -125,17 +205,27 @@ Il riepilogo finale dell'esempio contiene quattro prodotti:
 | Cappello | Disponibile |
 | Nuovo pareo | Disponibile |
 
-Queste verifiche riguardano gli scenari dimostrativi e non sostituiscono il controllo statico dei tipi con il compilatore TypeScript.
+## Flusso Git
+
+- **`development`:** branch dedicato allo sviluppo e alla verifica delle modifiche.
+- **`main`:** branch che contiene la versione stabile del progetto.
+
+Le modifiche vengono sviluppate su `development`, verificate con `npm run verify` e `npm start`, quindi integrate in `main`.
 
 ## Ambito del progetto
 
-Il sistema opera in memoria: i dati e il contatore degli ID vengono ricreati a ogni esecuzione. Non include database, autenticazione, pagamenti, certificazioni ambientali o gestione completa di magazzino e produzione.
+Il sistema opera in memoria: i dati e il contatore degli ID vengono ricreati a ogni esecuzione.
 
-Il contesto di sostenibilità è parte della simulazione didattica; il codice non misura l'impatto ambientale dei prodotti.
+Non include database, autenticazione, pagamenti reali o gestione completa di magazzino e produzione.
+
+Il contesto di sostenibilità è parte della simulazione didattica: il codice non misura l'impatto ambientale dei prodotti.
 
 ## 👨‍💻 Autore
 
-**Nicola Berardi** – Frontend Developer  
-🌐 [Portfolio](https://nicolawebdevelop.github.io/WebNicolaDesign/)  
-💻 [GitHub](https://github.com/NicolaWebDevelop)  
+**Nicola Berardi** – Frontend Developer
+
+🌐 [Portfolio](https://nicolawebdevelop.github.io/WebNicolaDesign/)
+
+💻 [GitHub](https://github.com/NicolaWebDevelop)
+
 📧 [Email](mailto:nicolag704@gmail.com)
